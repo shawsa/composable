@@ -55,19 +55,21 @@ fog = f @ g             # fog is a Composable
 fog = g | f             # fog is a Composable
 fog = lambda x: f(g(x)) # fog is a lambda
 ```
+create equivalent functions.
+
 Additionally, a value can be piped into a composable
 ```
 1 | Composable(lambda x: x+1) # ==> 2
 ```
 **Note:** Unfortunately, we cannot override Python's order of operations, and `|` is evaluated left to right. Since piping values into a Composible returns a value, every function in the pipeline must be an instance of Composable in order for the following to work as expected:
 ```
-value | composable1 | composable2 | composable 3
+value | composable1 | composable2 | composable3
 ```
 However, we may fix this with an extra set of parens
 ```
 value | (f | g | h)
 ```
-where `f`,`g`, and `h` are callables with at least one being an instance of Composable. To further facilitate this, Composable can be used with no arguments `Composable()` to create an identity Composable, or it can be used as a decorator
+where `f`,`g`, and `h` are callables with at least one being an instance of Composable. To further facilitate this, Composable can be used with no arguments `Composable()` to create an identity Composable, or it can be used as a decorator like so:
 ```
 @Composable
 def add1(x):

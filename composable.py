@@ -1,4 +1,4 @@
-from functools import reduce
+from functools import reduce, partial
 
 class Composable:
     '''
@@ -18,13 +18,14 @@ class Composable:
     pipline must be wrapped in parens to ensure it is converted
     to a Composable before evaluation.
     '''
+
     def __init__(self, f=None):
         if isinstance(f, Composable):
             self.function_tuple = f.function_tuple
         elif callable(f):
             self.function_tuple = (f,)
         elif f is None:
-            self.function_tuple = (lambda x: x, )
+            self.function_tuple = (identity, )
         else:
             raise ValueError('Input must be a callable')
         
@@ -78,7 +79,39 @@ class Composable:
             return self @ g
         else:
             return self(g)
+
+    def __repr__(self):
+        return 'Composable [' + ' | '.join(f.__repr__() for f in self.function_tuple) + ']'
+
+    def __str__(self):
+        return ' | '.join(callable_to_string(f) for f in self.function_tuple)
     
-add1 = Composable(lambda x: x+1)
-mul2 = Composable(lambda x: 2*x)
-square = lambda x: x*x
+# Helpers
+
+def identity(x):   
+    '''
+    A provided identity function for printing purposes.
+    '''
+    return x
+
+def callable_to_string(f):
+    '''
+    For printing purposes. Returns a valid string for named functions,
+    lambdas, maps, filters, and partials. Defaults to str(f) if not
+    recognized.
+    '''
+    if hasattr(f, '__name__'):
+        return f.__name__
+
+    if isinstance(f, partial):
+        return 'partial(' + callable_to_string(f.func) + ', ' + ', '.join(callable_to_string(arg) for arg in f.args) + ')'
+
+    if f is map:
+        return 'map'
+
+    if f is filter:
+        return 'filter'
+
+    return str(f)
+
+
