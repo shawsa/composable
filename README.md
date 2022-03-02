@@ -49,7 +49,8 @@ Instances of Composable wrap callables (functions) and compose with the "matmul"
 f = Composable(lambda x: x+1)
 g = lambda x: 2*x
 ```
-all three of the following 
+all three of the following
+```
 fog = f @ g             # fog is a Composable
 fog = g | f             # fog is a Composable
 fog = lambda x: f(g(x)) # fog is a lambda
